@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import LoginForm from "./components/loginForm/LoginForm";
+import Dashboard from "./containers/dashboard/Dashboard";
+import "./App.css";
+import Settings from "./containers/settings/Settings";
 
-function App() {
+const App = () => {
+  const [user, setUser] = useState(undefined);
+
+  const handleLogin = (username, role) => {
+    setUser({ username, role });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="background">
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+          <Route
+            path="/"
+            element={
+              (!user ? <Dashboard user={user} /> : <Navigate to="/login" />)
+            }
+          />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Router>
     </div>
   );
-}
+};
 
 export default App;

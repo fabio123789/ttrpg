@@ -1,8 +1,0 @@
-.background {
-  min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #2C3E50; /* Fallback color */
-  color: #FDF3E7; /* Text color */
-}

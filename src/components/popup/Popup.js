@@ -16,11 +16,11 @@ const Popup = ({
   actionText,
 }) => {
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog fullWidth open={open} onClose={handleClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined" color="secondary">
+        <Button onClick={handleClose} variant="outlined">
           Cancel
         </Button>
         <Button onClick={handleAction} color="primary">

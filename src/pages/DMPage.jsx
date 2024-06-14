@@ -11,14 +11,14 @@ const DMPage = () => {
   };
 
   return (
-    <Container>
+    <Container style={{ height: "100%" }}>
       <Typography variant="h4" gutterBottom>
         Dungeon Master Panel
       </Typography>
       <Box sx={{ mb: 4 }}>
         <CampaignForm onSave={handleSaveCampaign} />
       </Box>
-      <CampaignList campaigns={campaigns} />
+      {/* <CampaignList campaigns={campaigns} /> */}
     </Container>
   );
 };

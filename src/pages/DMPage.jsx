@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import CampaignForm from "../components/campaignForm/CampaignForm";
-import CampaignList from "../components/campaignList/CamapaignList";
 
 const DMPage = () => {
   const [campaigns, setCampaigns] = useState([]);

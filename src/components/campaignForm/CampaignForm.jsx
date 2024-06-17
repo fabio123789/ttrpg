@@ -21,8 +21,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useTheme, styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
+import ComposedInput from "../composedInput/ComposedInput";
 
 const defaultCampaignData = {
   campaignName: "",
@@ -30,24 +31,28 @@ const defaultCampaignData = {
   defaultCombatStats: [{ name: "", value: "" }],
   defaultSocialStats: [{ name: "", value: "" }],
   combatEnabled: true,
+  combatPointsEnabled: true,
+  startingCombatPoints: 0,
   socialEnabled: true,
-  health: { extra: 0, value: 0 },
-  stamina: { extra: 0, value: 0 },
-  trickPoints: { extra: 0, value: 0 },
-  willpower: { extra: 0, value: 0 },
+  socialPointsEnabled: true,
+  startingSocialPoints: 0,
+  health: 0,
+  stamina: 0,
+  trickPoints: 0,
+  willpower: 0,
 };
 
 const StatFields = ({ stats, onAdd, onRemove, onChange, label }) => (
-  <>
+  <div style={{ display: "flex", flexDirection: "column" }}>
     {stats.map((stat, index) => (
-      <Box key={index} sx={{ mb: 2 }}>
+      <Box key={index} sx={{ mb: 2, display: "flex", alignItems: "center" }}>
         <TextField
           label={`${label} Name`}
           value={stat.name}
           onChange={(e) => onChange(index, "name", e.target.value)}
           variant="outlined"
           fullWidth
-          sx={{ mb: 1 }}
+          sx={{ mb: 1, mr: 1, mt: 1 }}
         />
         <TextField
           label={`${label} Value`}
@@ -57,7 +62,7 @@ const StatFields = ({ stats, onAdd, onRemove, onChange, label }) => (
           }
           variant="outlined"
           fullWidth
-          sx={{ mb: 1 }}
+          sx={{ mb: 1, mr: 1, mt: 1 }}
         />
         <Tooltip title="Remove Stat">
           <IconButton onClick={() => onRemove(index)} color="secondary">
@@ -74,7 +79,7 @@ const StatFields = ({ stats, onAdd, onRemove, onChange, label }) => (
     >
       Add {label} Stat
     </Button>
-  </>
+  </div>
 );
 
 const DerivedStatField = ({ label, value, onChange, options }) => (
@@ -172,13 +177,6 @@ const CampaignForm = ({ onSave }) => {
     }));
   };
 
-  const handleDerivedStatChange = (field, value) => {
-    setCampaignData((prevData) => ({
-      ...prevData,
-      [field]: { ...prevData[field], ...value },
-    }));
-  };
-
   return (
     <Box sx={{ width: "100%" }}>
       <Stepper activeStep={activeStep}>
@@ -190,16 +188,13 @@ const CampaignForm = ({ onSave }) => {
       </Stepper>
       {activeStep === 0 ? (
         <>
-          <Typography sx={{ mt: 2 }} variant="h6" gutterBottom>
-            Create a New Campaign
-          </Typography>
           <TextField
             label="Campaign Name"
             value={campaignData.campaignName}
             onChange={(e) => handleChange("campaignName", e.target.value)}
             variant="outlined"
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, mt: 2 }}
           />
           <TextField
             label="Campaign Description"
@@ -229,13 +224,25 @@ const CampaignForm = ({ onSave }) => {
               label="Enable Combat"
             />
             {campaignData.combatEnabled && (
-              <StatFields
-                stats={campaignData.defaultCombatStats}
-                onAdd={addStat("defaultCombatStats")}
-                onRemove={removeStat("defaultCombatStats")}
-                onChange={handleStatChange("defaultCombatStats")}
-                label="Combat"
-              />
+              <>
+                <StatFields
+                  stats={campaignData.defaultCombatStats}
+                  onAdd={addStat("defaultCombatStats")}
+                  onRemove={removeStat("defaultCombatStats")}
+                  onChange={handleStatChange("defaultCombatStats")}
+                  label="Combat"
+                />
+                <TextField
+                  label={`Starting Combat Points Value`}
+                  value={campaignData.startingCombatPoints}
+                  onChange={(e) =>
+                    handleChange("startingCombatPoints", e.target.value.replace(/\D/g, ""))
+                  }
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 1 }}
+                />
+              </>
             )}
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -251,13 +258,25 @@ const CampaignForm = ({ onSave }) => {
               label="Enable Social"
             />
             {campaignData.socialEnabled && (
-              <StatFields
-                stats={campaignData.defaultSocialStats}
-                onAdd={addStat("defaultSocialStats")}
-                onRemove={removeStat("defaultSocialStats")}
-                onChange={handleStatChange("defaultSocialStats")}
-                label="Social"
-              />
+              <>
+                <StatFields
+                  stats={campaignData.defaultSocialStats}
+                  onAdd={addStat("defaultSocialStats")}
+                  onRemove={removeStat("defaultSocialStats")}
+                  onChange={handleStatChange("defaultSocialStats")}
+                  label="Social"
+                />
+                <TextField
+                  label={`Starting Social Points Value`}
+                  value={campaignData.startingSocialPoints}
+                  onChange={(e) =>
+                    handleChange("startingSocialPoints", e.target.value.replace(/\D/g, ""))
+                  }
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 1 }}
+                />
+              </>
             )}
           </Grid>
         </Grid>
@@ -266,15 +285,11 @@ const CampaignForm = ({ onSave }) => {
           {["health", "stamina", "trickPoints", "willpower"].map(
             (stat, key) => (
               <Grid key={key} item xs={12} sm={6}>
-                <DerivedStatField
-                  key={stat}
-                  label={stat.charAt(0).toUpperCase() + stat.slice(1)}
-                  value={campaignData[stat]}
-                  onChange={(field, value) =>
-                    handleDerivedStatChange(stat, { [field]: value })
-                  }
-                  options={campaignData.defaultCombatStats}
+                <ComposedInput key={stat} label={stat.charAt(0).toUpperCase() + stat.slice(1)} onChange={(value) =>
+                  handleChange(stat, value)
+                } options={campaignData.defaultCombatStats}
                 />
+                <Typography>{campaignData[stat]}</Typography>
               </Grid>
             )
           )}
